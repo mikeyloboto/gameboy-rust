@@ -1,7 +1,10 @@
 use std::fs;
+use std::io;
+use std::io::Read;
 
 mod constants;
 mod licensee;
+mod utils;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let filename = String::from("./roms/pred.gb");
@@ -98,13 +101,30 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
 
     println!("=============");
-    println!("Some random sandboxy stuff:");
+    println!("Tile test:");
 
-    let window_tile = &data[0x640A0..0x640B0];
-    for addr in window_tile {
-        println!("{:08b}", addr);
+    let mut cont = true;
+    let mut offset = 0x64000;
+    let mut input_buffer = String::new();
+
+    while cont {
+        offset += 0x10;
+
+        let window_tile = &data[offset..offset + 0x10];
+        let displayable_tile = utils::tile_to_displayable(window_tile);
+        println!("{:#X}", offset);
+        println!("{}", displayable_tile);
+
+        io::stdin().read_line(&mut input_buffer)?;
+        if input_buffer.trim() == "exit" {
+            cont = false;
+        }
+        input_buffer.clear();
     }
-    // print!("Window tile: {:08b}", window_tile);
 
+    // let window_tile = &data[0x641C0..0x641D0];
+    // let displayable_tile = utils::tile_to_displayable(window_tile);
+
+    // println!("{}", displayable_tile);
     Ok(())
 }
