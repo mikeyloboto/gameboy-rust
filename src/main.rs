@@ -1,6 +1,5 @@
 use std::fs;
 use std::io;
-use std::io::Read;
 
 mod constants;
 mod licensee;
@@ -116,15 +115,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("{}", displayable_tile);
 
         io::stdin().read_line(&mut input_buffer)?;
-        if input_buffer.trim() == "exit" {
+        if input_buffer.trim() == "exit" || input_buffer.trim() == "q" {
             cont = false;
         }
         input_buffer.clear();
     }
-
-    // let window_tile = &data[0x641C0..0x641D0];
-    // let displayable_tile = utils::tile_to_displayable(window_tile);
-
-    // println!("{}", displayable_tile);
     Ok(())
 }
