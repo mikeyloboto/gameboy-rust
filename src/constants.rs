@@ -50,6 +50,24 @@ pub fn get_rom_size(rom_size: u8) -> String {
     }
 }
 
+pub fn get_num_rom_banks(rom_size: u8) -> u16 {
+    match rom_size {
+        0x00 => 2,
+        0x01 => 4,
+        0x02 => 8,
+        0x03 => 16,
+        0x04 => 32,
+        0x05 => 64,
+        0x06 => 128,
+        0x07 => 256,
+        0x08 => 512,
+        0x52 => 72,
+        0x53 => 80,
+        0x54 => 96,
+        _ => 0,
+    }
+}
+
 pub fn get_ram_size(ram_size: u8) -> String {
     match ram_size {
         0x00 => "None".to_string(),

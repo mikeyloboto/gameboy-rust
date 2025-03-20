@@ -6,6 +6,7 @@ pub struct Memory {
     io_registers: Vec<u8>,
 }
 
+#[derive(Debug)]
 struct Registers {
     af: Register,
     bc: Register,
@@ -15,6 +16,7 @@ struct Registers {
     pc: Register,
 }
 
+#[derive(Debug)]
 struct Register {
     value: u16,
 }
@@ -33,6 +35,35 @@ impl Register {
     }
 }
 
-pub struct Cpu {
-    registers: Registers,
+#[derive(Debug)]
+pub struct MBC {
+    mem: Vec<u8>,
+    key: u32,
+}
+impl MBC {
+    pub fn new(mem: Vec<u8>, key: u32) -> MBC {
+        MBC { mem, key }
+    }
+}
+
+#[derive(Debug)]
+pub struct Device {
+    reg: Registers,
+    banks: Vec<MBC>,
+}
+
+impl Device {
+    pub fn new(banks: Vec<MBC>) -> Device {
+        Device {
+            reg: Registers {
+                af: Register { value: 0x0000 },
+                bc: Register { value: 0x0000 },
+                de: Register { value: 0x0000 },
+                hl: Register { value: 0x0000 },
+                sp: Register { value: 0x0000 },
+                pc: Register { value: 0x0000 },
+            },
+            banks,
+        }
+    }
 }
