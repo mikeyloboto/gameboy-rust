@@ -22,8 +22,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     let data: Vec<u8> = fs::read(&filename)?;
 
-    let mut cart_meta = meta::extract_metadata(&data, true);
-    let mut device = hardware::Device::new(generate_banks(cart_meta.rom_size()));
+    let cart_meta = meta::extract_metadata(&data, true);
+    let mut device = hardware::Device::new(cart_meta);
+
+    // Map initial ROM bank
+
+    for bank_data in &data[0x14F..0x3FFF] {
+        device.get_bank_mut(0).mem.push(*bank_data);
+    }
+    for bank_data in &data[0x4000..0x7FFF] {
+        device.get_bank_mut(1).mem.push(*bank_data);
+    }
+
+    device.start_exec();
+
+    // println!("{:?}", device.get_bank(0));
 
     // println!("=============");
     // println!("Tile test:");
@@ -49,14 +62,4 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //     input_buffer.clear();
     // }
     Ok(())
-}
-
-fn generate_banks(size: u8) -> Vec<hardware::MBC> {
-    let mut rom_banks = Vec::new();
-    let rom_banks_amount = constants::get_num_rom_banks(size);
-    for bank in 0..rom_banks_amount {
-        let rom_bank = hardware::MBC::new(Vec::new(), (bank as u32) * (0x4000 as u32));
-        rom_banks.push(rom_bank);
-    }
-    return rom_banks;
 }
